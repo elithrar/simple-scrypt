@@ -1,15 +1,14 @@
 # simple-scrypt  [![GoDoc](https://godoc.org/github.com/elithrar/simple-scrypt?status.png)](https://godoc.org/github.com/elithrar/simple-scrypt) [![Build Status](https://travis-ci.org/elithrar/simple-scrypt.svg)](https://travis-ci.org/elithrar/simple-scrypt)
 
-simple-scrypt provides a convenience wrapper around Go's existing [scrypt](http://golang.org/x/crypto/scrypt) package that makes it easier to:
+simple-scrypt provides a convenience wrapper around Go's existing [scrypt](http://golang.org/x/crypto/scrypt) package that makes it easier to securely "hash" user passwords. This library allows you to:
 
-* Automatically generate a crytographically secure salt as input into the scrypt key derivation function (KDF)
-* Use sane default parameters for the scrypt function (N, r, p)
-* Shares a similar API to Go's existing [bcrypt](http://golang.org/x/crypto/bcrypt) library.
-* Output a derived key that prepends the parameters used to facilitate upgrading parameters in the future, as hardware improves (the scrypt spec. doesn't allow for this itself).
+* Generate a scrypt derived key with a crytographically secure salt and sane default parameters for N, r and p.
+* Upgrade the parameters used to generate keys as hardware improves by storing them with the derived key (the scrypt spec. doesn't allow for this by default).
+* Provide your own parameters (if you wish to). 
 
 ## Simple Example
 
-simple-scrypt doesn't try to re-invent the wheel or do anything "special". It wraps the `scrypt.Key` function as thinly as possible, generates a crytographically secure 16-byte salt for you using Go's `crypto/rand` package, and returns the derived key with the parameters prepended:
+simple-scrypt doesn't try to re-invent the wheel or do anything "special". It wraps the `scrypt.Key` function as thinly as possible, generates a crytographically secure salt for you using Go's `crypto/rand` package, and returns the derived key with the parameters prepended:
 
 ```go
 package main
