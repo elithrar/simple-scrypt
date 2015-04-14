@@ -6,9 +6,9 @@ simple-scrypt provides a convenience wrapper around Go's existing [scrypt](http:
 * Upgrade the parameters used to generate keys as hardware improves by storing them with the derived key (the scrypt spec. doesn't allow for this by default).
 * Provide your own parameters (if you wish to). 
 
-The API closely mirrors Go's [bcrypt](https://golang.org/x/crypto/bcrypt) library in an effort to make it easy to migrate—and because it's an easy to grok API.:wq
+The API closely mirrors Go's [bcrypt](https://golang.org/x/crypto/bcrypt) library in an effort to make it easy to migrate—and because it's an easy to grok API.
 
-## Simple Example
+## Example
 
 simple-scrypt doesn't try to re-invent the wheel or do anything "special". It wraps the `scrypt.Key` function as thinly as possible, generates a crytographically secure salt for you using Go's `crypto/rand` package, and returns the derived key with the parameters prepended:
 
@@ -52,14 +52,21 @@ Upgrading derived keys from a set of parameters to a "stronger" set of parameter
 
 ```go
 func main() {
-    // SCENE: We've successfully authenticated a user, compared their submitted (cleartext) password against the
-    // derived key stored in our database, and now want to upgrade the parameters (more rounds, more parallelism) to reflect some shiny new hardware we just purchased. As the user is logging in, we can retrieve the parameters used to generate their key, and if they don't match our "new" parameters, we can re-generate the key while we still have the cleartext password in memory (e.g. before the HTTP request ends).
+    // SCENE: We've successfully authenticated a user, compared their submitted
+    // (cleartext) password against the derived key stored in our database, and 
+    // now want to upgrade the parameters (more rounds, more parallelism) to 
+    // reflect some shiny new hardware we just purchased. As the user is logging 
+    // in, we can retrieve the parameters used to generate their key, and if 
+    // they don't match our "new" parameters, we can re-generate the key while 
+    // we still have the cleartext password in memory 
+    // (e.g. before the HTTP request ends).
     current, err := scrypt.Cost(hash)
     if err != nil {
         log.Fatal(err)
     }
 
-    // Now to check them against our own Params struct (e.g. using reflect.DeepEqualsj) and determine whether we want to generate a new key with our "upgraded" parameters.
+    // Now to check them against our own Params struct (e.g. using reflect.DeepEquals) 
+    // and determine whether we want to generate a new key with our "upgraded" parameters.
     slower := scrypt.Params{
         N: 32768,
         R: 8,
@@ -69,7 +76,8 @@ func main() {
     }
 
     if !reflect.DeepEqual(current, slower) {
-        // Re-generate the key with the slower parameters here using scrypt.GenerateFromPassword
+        // Re-generate the key with the slower parameters 
+        // here using scrypt.GenerateFromPassword
     }
 }
 ```
