@@ -1,3 +1,8 @@
+// Package scrypt provides a convenience wrapper around Go's existing scrypt package
+// that makes it easier to securely derive strong keys from weak
+// inputs (i.e. user passwords).
+// The package provides password generation, constant-time comparison and
+// parameter upgrading for scrypt derived keys.
 package scrypt
 
 import (
