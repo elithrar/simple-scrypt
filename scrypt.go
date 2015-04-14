@@ -65,7 +65,7 @@ func GenerateRandomBytes(n int) ([]byte, error) {
 // parameters provided. The parameters are prepended to the derived key and
 // separated by the "$" character (0x24).
 // If the parameters provided are less than the minimum acceptable values,
-// DefaultParams are used instead.
+// an error will be returned.
 func GenerateFromPassword(password []byte, params Params) ([]byte, error) {
 	salt, err := GenerateRandomBytes(params.SaltLen)
 	if err != nil {
