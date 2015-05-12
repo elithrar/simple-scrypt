@@ -48,7 +48,7 @@ func main() {
 
 ## Upgrading Parameters
 
-Upgrading derived keys from a set of parameters to a "stronger" set of parameters as hardware improves, or as you scale (and move your uauth. process to separate hardware), can be pretty useful. Here's how to do it with simple-scrypt:
+Upgrading derived keys from a set of parameters to a "stronger" set of parameters as hardware improves, or as you scale (and move your auth process to separate hardware), can be pretty useful. Here's how to do it with simple-scrypt:
 
 ```go
 func main() {
