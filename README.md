@@ -1,5 +1,5 @@
 # simple-scrypt
-[![GoDoc](https://godoc.org/github.com/elithrar/simple-scrypt?status.svg)](https://godoc.org/github.com/elithrar/simple-scrypt) [![Build Status](https://travis-ci.org/elithrar/simple-scrypt.svg?branch=master)](https://travis-ci.org/elithrar/simple-scrypt) 
+[![GoDoc](https://godoc.org/github.com/elithrar/simple-scrypt?status.svg)](https://godoc.org/github.com/elithrar/simple-scrypt) [![Build Status](https://travis-ci.org/elithrar/simple-scrypt.svg?branch=master)](https://travis-ci.org/elithrar/simple-scrypt)
 
 simple-scrypt provides a convenience wrapper around Go's existing [scrypt](http://golang.org/x/crypto/scrypt) package that makes it easier to securely derive strong keys ("hash user passwords"). This library allows you to:
 
@@ -87,7 +87,10 @@ func main() {
 
 The following features are planned. PRs are welcome.
 
-- [ ] Automatically calculate "optimal" values for N, r, p similar [to the Ruby scrypt library](https://github.com/pbhogan/scrypt/blob/master/lib/scrypt.rb#L97-L146) - e.g. `func Calibrate(duration int, mem int) (Params, error)`.
-- [ ] Consider a custom error type to allow returning more precise errors when parameters are invalid or incorrect.
-- [ ] Tag a release build.
+- [x] Tag a release build.
+- [ ] Automatically calculate "optimal" values for N, r, p similar [to the Ruby scrypt library](https://github.com/pbhogan/scrypt/blob/master/lib/scrypt.rb#L97-L146) - e.g. `func Calibrate(duration int, mem int) (Params, error)` - long term feature due to cross-platform issues.
+
+## License
+
+MIT Licensed. See LICENSE file for details.
 
