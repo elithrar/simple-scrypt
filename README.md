@@ -87,7 +87,10 @@ func main() {
 
 The following features are planned. PRs are welcome.
 
-- [ ] Automatically calculate "optimal" values for N, r, p similar [to the Ruby scrypt library](https://github.com/pbhogan/scrypt/blob/master/lib/scrypt.rb#L97-L146) - e.g. `func Calibrate(duration int, mem int) (Params, error)`.
-- [ ] Consider a custom error type to allow returning more precise errors when parameters are invalid or incorrect.
-- [ ] Tag a release build.
+- [x] Tag a release build.
+- [ ] Automatically calculate "optimal" values for N, r, p similar [to the Ruby scrypt library](https://github.com/pbhogan/scrypt/blob/master/lib/scrypt.rb#L97-L146) - e.g. `func Calibrate(duration int, mem int) (Params, error)` - long term feature due to cross-platform issues.
+
+## License
+
+MIT Licensed. See LICENSE file for details.
 
