@@ -11,15 +11,17 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"golang.org/x/crypto/scrypt"
 	"strconv"
 	"strings"
+
+	"golang.org/x/crypto/scrypt"
 )
 
+// Constants
 const (
 	maxInt     = 1<<31 - 1
-	MinDKLen   = 16 // the minimum derived key length in bytes.
-	MinSaltLen = 8  // the minimum allowed salt length in bytes.
+	minDKLen   = 16 // the minimum derived key length in bytes.
+	minSaltLen = 8  // the minimum allowed salt length in bytes.
 )
 
 // Params describes the input parameters to the scrypt
@@ -142,12 +144,12 @@ func (p *Params) Check() error {
 	}
 
 	// Validate the salt length
-	if p.SaltLen < MinSaltLen || p.SaltLen > maxInt {
+	if p.SaltLen < minSaltLen || p.SaltLen > maxInt {
 		return ErrInvalidParams
 	}
 
 	// Validate the derived key length
-	if p.DKLen < MinDKLen || p.DKLen > maxInt {
+	if p.DKLen < minDKLen || p.DKLen > maxInt {
 		return ErrInvalidParams
 	}
 
