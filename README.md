@@ -1,17 +1,27 @@
 # simple-scrypt
 [![GoDoc](https://godoc.org/github.com/elithrar/simple-scrypt?status.svg)](https://godoc.org/github.com/elithrar/simple-scrypt) [![Build Status](https://travis-ci.org/elithrar/simple-scrypt.svg?branch=master)](https://travis-ci.org/elithrar/simple-scrypt)
 
-simple-scrypt provides a convenience wrapper around Go's existing [scrypt](http://golang.org/x/crypto/scrypt) package that makes it easier to securely derive strong keys ("hash user passwords"). This library allows you to:
+simple-scrypt provides a convenience wrapper around Go's existing
+[scrypt](http://golang.org/x/crypto/scrypt) package that makes it easier to
+securely derive strong keys ("hash user passwords"). This library allows you to:
 
-* Generate a scrypt derived key with a crytographically secure salt and sane default parameters for N, r and p.
-* Upgrade the parameters used to generate keys as hardware improves by storing them with the derived key (the scrypt spec. doesn't allow for this by default).
+* Generate a scrypt derived key with a crytographically secure salt and sane
+  default parameters for N, r and p.
+* Upgrade the parameters used to generate keys as hardware improves by storing
+  them with the derived key (the scrypt spec. doesn't allow for this by
+  default).
 * Provide your own parameters (if you wish to). 
 
-The API closely mirrors Go's [bcrypt](https://golang.org/x/crypto/bcrypt) library in an effort to make it easy to migrate—and because it's an easy to grok API.
+The API closely mirrors Go's [bcrypt](https://golang.org/x/crypto/bcrypt)
+library in an effort to make it easy to migrate—and because it's an easy to grok
+API.
 
 ## Example
 
-simple-scrypt doesn't try to re-invent the wheel or do anything "special". It wraps the `scrypt.Key` function as thinly as possible, generates a crytographically secure salt for you using Go's `crypto/rand` package, and returns the derived key with the parameters prepended:
+simple-scrypt doesn't try to re-invent the wheel or do anything "special". It
+wraps the `scrypt.Key` function as thinly as possible, generates a
+crytographically secure salt for you using Go's `crypto/rand` package, and
+returns the derived key with the parameters prepended:
 
 ```go
 package main
@@ -49,7 +59,9 @@ func main() {
 
 ## Upgrading Parameters
 
-Upgrading derived keys from a set of parameters to a "stronger" set of parameters as hardware improves, or as you scale (and move your auth process to separate hardware), can be pretty useful. Here's how to do it with simple-scrypt:
+Upgrading derived keys from a set of parameters to a "stronger" set of parameters 
+as hardware improves, or as you scale (and move your auth process to separate 
+hardware), can be pretty useful. Here's how to do it with simple-scrypt:
 
 ```go
 func main() {
@@ -88,7 +100,11 @@ func main() {
 The following features are planned. PRs are welcome.
 
 - [x] Tag a release build.
-- [ ] Automatically calculate "optimal" values for N, r, p similar [to the Ruby scrypt library](https://github.com/pbhogan/scrypt/blob/master/lib/scrypt.rb#L97-L146) - e.g. `func Calibrate(duration int, mem int) (Params, error)` - long term feature due to cross-platform issues.
+- [ ] ~~Automatically calculate "optimal" values for N, r, p similar [to the Ruby scrypt library](https://github.com/pbhogan/scrypt/blob/master/lib/scrypt.rb#L97-L146) 
+   e.g. `func Calibrate(duration int, mem int) (Params, error)` - long term feature 
+   due to cross-platform issues~~. Based on some research, this isn't possible 
+   cross-platform without requiring cgo. Requiring cgo isn't a worthwhile trade-off, 
+   as you can still test/measure scrypt parameter performance manually.
 
 ## License
 
