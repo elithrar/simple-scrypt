@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"golang.org/x/crypto/scrypt"
 )
@@ -91,7 +92,7 @@ func GenerateFromPassword(password []byte, params Params) ([]byte, error) {
 
 	// Prepend the params and the salt to the derived key, each separated
 	// by a "$" character. The salt and the derived key are hex encoded.
-	return []byte(fmt.Sprintf("%d$%d$%d$%x$%x", params.N, params.R, params.P, salt, dk)), err
+	return params.printKey(salt, dk), err
 }
 
 // CompareHashAndPassword compares a derived key with the possible cleartext
@@ -211,4 +212,71 @@ func Cost(hash []byte) (Params, error) {
 	params, _, _, err := decodeHash(hash)
 
 	return params, err
+}
+
+func (p Params) printKey(salt, dk []byte) []byte {
+	return []byte(fmt.Sprintf("%d$%d$%d$%x$%x", p.N, p.R, p.P, salt, dk))
+}
+
+func (p Params) generatePasswordWithLimit(password []byte, timeout time.Duration, memBytes int) ([]byte, Params, error) {
+	if p.N == 0 || p.R == 0 || p.P == 0 || p.SaltLen == 0 || p.DKLen == 0 {
+		p = DefaultParams
+	} else if err := p.Check(); err != nil {
+		return nil, p, err
+	}
+
+	deadline := time.Now().Add(timeout)
+	salt, err := GenerateRandomBytes(p.SaltLen)
+	if err != nil {
+		return nil, p, err
+	}
+
+	var dur time.Duration
+	var dk []byte
+	lng := p
+	p.N <<= 1
+	now := time.Now()
+	// memory = (128 * r * N).
+	for actMem := 128 * p.N * p.R; (memBytes == 0 || actMem <= memBytes) &&
+		(timeout == 0 || now.Add(dur).Before(deadline)); {
+		//log.Printf("N=%d actMem=%d memBytes=%d", p.N, actMem, memBytes)
+		start := now
+		if dk, err = scrypt.Key(password, salt, p.N, p.R, p.P, p.DKLen); err != nil {
+			return nil, lng, err
+		}
+		now = time.Now()
+		dur = now.Sub(start)
+		if err := p.Check(); err != nil {
+			return lng.printKey(salt, dk), lng, nil // yes, no error
+		}
+		lng = p
+		p.N <<= 1
+		actMem <<= 1
+	}
+
+	return lng.printKey(salt, dk), lng, nil
+}
+
+// Harden the params within the given limits.
+// Memory limit is in bytes, and zero means no limit.
+func (p Params) Harden(timeout time.Duration, memBytes int) (Params, error) {
+	_, p, err := p.generatePasswordWithLimit([]byte("password"), timeout, memBytes)
+	return p, err
+}
+
+// Calibrate the system starting from DefaultParams, within the given limits.
+func Calibrate(timeout time.Duration, memBytes int) (Params, error) {
+	return DefaultParams.Harden(timeout, memBytes)
+}
+
+// GenerateFromPasswordWithLimit returns the derived key of the password using the
+// parameters provided, just as GenerateFromPassword, but within the given limits.
+//
+// If params is zero (Params{}), then DefaultParams is used.
+func GenerateFromPasswordWithLimit(
+	password []byte, params Params,
+	timeout time.Duration, memBytes int,
+) ([]byte, error) {
+	sdk, _, err := params.generatePasswordWithLimit(password, timeout, memBytes)
+	return sdk, err
 }

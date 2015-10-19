@@ -3,6 +3,7 @@ package scrypt
 import (
 	"reflect"
 	"testing"
+	"time"
 )
 
 // Test cases
@@ -103,6 +104,21 @@ func TestDecodeHash(t *testing.T) {
 		_, _, _, err := decodeHash([]byte(v.hash))
 		if err == nil && v.pass == false {
 			t.Fatal("invalid hash: did not correctly detect invalid password hash")
+		}
+	}
+}
+
+func TestGenerateFromPasswordWithLimit(t *testing.T) {
+	timeout := 2 * time.Second
+	for _, v := range testParams {
+		start := time.Now()
+		_, err := GenerateFromPasswordWithLimit([]byte(password), v.params, timeout, 256<<20)
+		dur := time.Since(start)
+		if err != nil && v.pass == true {
+			t.Fatalf("no error was returned when expected for params: %+v", v.params)
+		}
+		if dur > timeout*2 {
+			t.Errorf("Too much time taken: %s instead of %s.", dur, timeout)
 		}
 	}
 }
