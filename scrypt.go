@@ -276,7 +276,7 @@ func Calibrate(timeout time.Duration, memMiBytes int, params Params) (Params, er
 	}
 
 	// We have to compensate the lowering of N, by increasing p.
-	for p.P > 0 && p.P < maxInt {
+	for i := 0; i < 10 && p.P > 0; i++ {
 		start := time.Now()
 		if _, err := scrypt.Key(password, salt, p.N, p.R, p.P, p.DKLen); err != nil {
 			return p, err
@@ -284,7 +284,7 @@ func Calibrate(timeout time.Duration, memMiBytes int, params Params) (Params, er
 		dur := time.Since(start)
 		if dur < timeout/2 {
 			p.P = int(float64(p.P)*float64(timeout/dur) + 1)
-		} else if dur > timeout {
+		} else if dur > timeout && p.P > 1 {
 			p.P--
 		} else {
 			break

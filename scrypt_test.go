@@ -122,9 +122,13 @@ func TestCalibrate(t *testing.T) {
 		{8},
 		{1},
 	} {
-		p, err := scrypt.Calibrate(timeout, tc.MemMiB, scrypt.Params{})
+		var (
+			p   scrypt.Params
+			err error
+		)
+		p, err = scrypt.Calibrate(timeout, tc.MemMiB, p)
 		if err != nil {
-			t.Fatalf("%d. %v", testNum, err)
+			t.Fatalf("%d. %#v: %v", testNum, p, err)
 		}
 		if (128*p.R*p.N)>>20 > tc.MemMiB {
 			t.Errorf("%d. wanted memory limit %d, got %d.", testNum, tc.MemMiB, (128*p.R*p.N)>>20)
