@@ -109,12 +109,16 @@ func TestDecodeHash(t *testing.T) {
 }
 
 func TestGenerateFromPasswordWithLimit(t *testing.T) {
-	timeout := 2 * time.Second
+	timeout := 1 * time.Second
+	memMiB := 32 << 20
+	p := DefaultParams
 	for _, v := range testParams {
 		start := time.Now()
-		_, err := GenerateFromPasswordWithLimit([]byte(password), v.params, timeout, 256<<20)
+		err := p.Harden(timeout, memMiB)
 		dur := time.Since(start)
 		if err != nil && v.pass == true {
+			t.Fatalf("error was returned for %+v: %v", v.params, err)
+		} else if err == nil && v.pass == false {
 			t.Fatalf("no error was returned when expected for params: %+v", v.params)
 		}
 		if dur > timeout*2 {

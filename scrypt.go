@@ -92,7 +92,7 @@ func GenerateFromPassword(password []byte, params Params) ([]byte, error) {
 
 	// Prepend the params and the salt to the derived key, each separated
 	// by a "$" character. The salt and the derived key are hex encoded.
-	return params.printKey(salt, dk), err
+	return []byte(fmt.Sprintf("%d$%d$%d$%x$%x", params.N, params.R, params.P, salt, dk)), nil
 }
 
 // CompareHashAndPassword compares a derived key with the possible cleartext
@@ -214,69 +214,67 @@ func Cost(hash []byte) (Params, error) {
 	return params, err
 }
 
-func (p Params) printKey(salt, dk []byte) []byte {
-	return []byte(fmt.Sprintf("%d$%d$%d$%x$%x", p.N, p.R, p.P, salt, dk))
-}
-
-func (p Params) generatePasswordWithLimit(password []byte, timeout time.Duration, memBytes int) ([]byte, Params, error) {
+// Calibrate the parameters to the maximum allowed by the given limits.
+//
+// The default timeout (when the timeout arg is zero) is 200ms.
+// The default memMiBytes (when memMiBytes is zero) is 16MiB.
+// The default parameters (when p == Params{}) is DefaultParams.
+func (p Params) Calibrate(timeout time.Duration, memMiBytes int) (Params, error) {
 	if p.N == 0 || p.R == 0 || p.P == 0 || p.SaltLen == 0 || p.DKLen == 0 {
 		p = DefaultParams
 	} else if err := p.Check(); err != nil {
-		return nil, p, err
+		return p, err
 	}
-
-	deadline := time.Now().Add(timeout)
+	if timeout == 0 {
+		timeout = 200 * time.Millisecond
+	}
+	if memMiBytes == 0 {
+		memMiBytes = 16
+	}
 	salt, err := GenerateRandomBytes(p.SaltLen)
 	if err != nil {
-		return nil, p, err
+		return p, err
 	}
+	password := []byte("weakpassword")
 
-	var dur time.Duration
-	var dk []byte
-	lng := p
-	p.N <<= 1
-	now := time.Now()
-	// memory = (128 * r * N).
-	for actMem := 128 * p.N * p.R; (memBytes == 0 || actMem <= memBytes) &&
-		(timeout == 0 || now.Add(dur).Before(deadline)); {
-		//log.Printf("N=%d actMem=%d memBytes=%d", p.N, actMem, memBytes)
-		start := now
-		if dk, err = scrypt.Key(password, salt, p.N, p.R, p.P, p.DKLen); err != nil {
-			return nil, lng, err
-		}
-		now = time.Now()
-		dur = now.Sub(start)
-		if err := p.Check(); err != nil {
-			return lng.printKey(salt, dk), lng, nil // yes, no error
-		}
-		lng = p
+	// First, we calculate the minimal required time.
+	start := time.Now()
+	if _, err := scrypt.Key(password, salt, p.N, p.R, p.P, p.DKLen); err != nil {
+		return p, err
+	}
+	dur := time.Since(start)
+
+	for dur < timeout && p.N < maxInt>>1 {
 		p.N <<= 1
-		actMem <<= 1
 	}
 
-	return lng.printKey(salt, dk), lng, nil
+	// Memory usage is at least 128 * r * N, see
+	// http://blog.ircmaxell.com/2014/03/why-i-dont-recommend-scrypt.html
+	// or https://drupal.org/comment/4675994#comment-4675994
+
+	memBytes := memMiBytes << 20
+	// If we'd use more memory then the allowed, we can tune the memory usage
+	for 128*p.R*p.N > memBytes && p.R > 1 {
+		// by lowering r
+		p.R--
+	}
+
+	// If we still above the memory limit, we can lower N but raise p
+	for 128*p.R*p.N > memBytes && p.N > 16 && p.P < maxInt {
+		p.P++
+		p.N >>= 1
+	}
+
+	return p, p.Check()
 }
 
-// Harden the params within the given limits.
-// Memory limit is in bytes, and zero means no limit.
-func (p Params) Harden(timeout time.Duration, memBytes int) (Params, error) {
-	_, p, err := p.generatePasswordWithLimit([]byte("password"), timeout, memBytes)
-	return p, err
-}
-
-// Calibrate the system starting from DefaultParams, within the given limits.
-func Calibrate(timeout time.Duration, memBytes int) (Params, error) {
-	return DefaultParams.Harden(timeout, memBytes)
-}
-
-// GenerateFromPasswordWithLimit returns the derived key of the password using the
-// parameters provided, just as GenerateFromPassword, but within the given limits.
-//
-// If params is zero (Params{}), then DefaultParams is used.
-func GenerateFromPasswordWithLimit(
-	password []byte, params Params,
-	timeout time.Duration, memBytes int,
-) ([]byte, error) {
-	sdk, _, err := params.generatePasswordWithLimit(password, timeout, memBytes)
-	return sdk, err
+// Harden the params within the given limits. This is the same as Calibrate,
+// but modifies the parameters in-place.
+func (p *Params) Harden(timeout time.Duration, memMiBytes int) error {
+	q, err := p.Calibrate(timeout, memMiBytes)
+	if err != nil {
+		return err
+	}
+	*p = q
+	return nil
 }
