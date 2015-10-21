@@ -214,12 +214,17 @@ func Cost(hash []byte) (Params, error) {
 	return params, err
 }
 
-// Calibrate the parameters to the maximum allowed by the given limits.
+// Calibrate returns the hardest parameters (not weaker than the given params),
+// allowed by the given limits.
+// The returned params will not use more memory than the given (MiB);
+// will not take more time than the given timeout, but more than timeout/2.
 //
-// The default timeout (when the timeout arg is zero) is 200ms.
-// The default memMiBytes (when memMiBytes is zero) is 16MiB.
-// The default parameters (when p == Params{}) is DefaultParams.
-func (p Params) Calibrate(timeout time.Duration, memMiBytes int) (Params, error) {
+//
+//   The default timeout (when the timeout arg is zero) is 200ms.
+//   The default memMiBytes (when memMiBytes is zero) is 16MiB.
+//   The default parameters (when params == Params{}) is DefaultParams.
+func Calibrate(timeout time.Duration, memMiBytes int, params Params) (Params, error) {
+	p := params
 	if p.N == 0 || p.R == 0 || p.P == 0 || p.SaltLen == 0 || p.DKLen == 0 {
 		p = DefaultParams
 	} else if err := p.Check(); err != nil {
@@ -252,29 +257,39 @@ func (p Params) Calibrate(timeout time.Duration, memMiBytes int) (Params, error)
 	// http://blog.ircmaxell.com/2014/03/why-i-dont-recommend-scrypt.html
 	// or https://drupal.org/comment/4675994#comment-4675994
 
+	var again bool
 	memBytes := memMiBytes << 20
 	// If we'd use more memory then the allowed, we can tune the memory usage
-	for 128*p.R*p.N > memBytes && p.R > 1 {
-		// by lowering r
-		p.R--
+	for 128*p.R*p.N > memBytes {
+		if p.R > 1 {
+			// by lowering r
+			p.R--
+		} else if p.N > 16 {
+			again = true
+			p.N >>= 1
+		} else {
+			break
+		}
+	}
+	if !again {
+		return p, p.Check()
 	}
 
-	// If we still above the memory limit, we can lower N but raise p
-	for 128*p.R*p.N > memBytes && p.N > 16 && p.P < maxInt {
-		p.P++
-		p.N >>= 1
+	// We have to compensate the lowering of N, by increasing p.
+	for p.P > 0 && p.P < maxInt {
+		start := time.Now()
+		if _, err := scrypt.Key(password, salt, p.N, p.R, p.P, p.DKLen); err != nil {
+			return p, err
+		}
+		dur := time.Since(start)
+		if dur < timeout/2 {
+			p.P = int(float64(p.P)*float64(timeout/dur) + 1)
+		} else if dur > timeout {
+			p.P--
+		} else {
+			break
+		}
 	}
 
 	return p, p.Check()
-}
-
-// Harden the params within the given limits. This is the same as Calibrate,
-// but modifies the parameters in-place.
-func (p *Params) Harden(timeout time.Duration, memMiBytes int) error {
-	q, err := p.Calibrate(timeout, memMiBytes)
-	if err != nil {
-		return err
-	}
-	*p = q
-	return nil
 }
