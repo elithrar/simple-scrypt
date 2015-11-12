@@ -6,12 +6,10 @@ go:
 - 1.4
 - 1.5
 - tip
-
 install:
-- go list -f '{{range .Imports}}{{.}} {{end}}' ./... | xargs go get -v
-- go list -f '{{range .TestImports}}{{.}} {{end}}' ./... | xargs go get -v
-- go get golang.org/x/tools/cmd/cover
-- go build -v ./...
-
+  - go get golang.org/x/tools/cmd/vet
 script:
-- go test -v -cover ./...
+  - go get -t -v ./...
+  - diff -u <(echo -n) <(gofmt -d -s .)
+  - go tool vet .
+  - go test -v -race ./...
