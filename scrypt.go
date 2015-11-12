@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"golang.org/x/crypto/scrypt"
 )
@@ -91,7 +92,7 @@ func GenerateFromPassword(password []byte, params Params) ([]byte, error) {
 
 	// Prepend the params and the salt to the derived key, each separated
 	// by a "$" character. The salt and the derived key are hex encoded.
-	return []byte(fmt.Sprintf("%d$%d$%d$%x$%x", params.N, params.R, params.P, salt, dk)), err
+	return []byte(fmt.Sprintf("%d$%d$%d$%x$%x", params.N, params.R, params.P, salt, dk)), nil
 }
 
 // CompareHashAndPassword compares a derived key with the possible cleartext
@@ -211,4 +212,84 @@ func Cost(hash []byte) (Params, error) {
 	params, _, _, err := decodeHash(hash)
 
 	return params, err
+}
+
+// Calibrate returns the hardest parameters (not weaker than the given params),
+// allowed by the given limits.
+// The returned params will not use more memory than the given (MiB);
+// will not take more time than the given timeout, but more than timeout/2.
+//
+//
+//   The default timeout (when the timeout arg is zero) is 200ms.
+//   The default memMiBytes (when memMiBytes is zero) is 16MiB.
+//   The default parameters (when params == Params{}) is DefaultParams.
+func Calibrate(timeout time.Duration, memMiBytes int, params Params) (Params, error) {
+	p := params
+	if p.N == 0 || p.R == 0 || p.P == 0 || p.SaltLen == 0 || p.DKLen == 0 {
+		p = DefaultParams
+	} else if err := p.Check(); err != nil {
+		return p, err
+	}
+	if timeout == 0 {
+		timeout = 200 * time.Millisecond
+	}
+	if memMiBytes == 0 {
+		memMiBytes = 16
+	}
+	salt, err := GenerateRandomBytes(p.SaltLen)
+	if err != nil {
+		return p, err
+	}
+	password := []byte("weakpassword")
+
+	// First, we calculate the minimal required time.
+	start := time.Now()
+	if _, err := scrypt.Key(password, salt, p.N, p.R, p.P, p.DKLen); err != nil {
+		return p, err
+	}
+	dur := time.Since(start)
+
+	for dur < timeout && p.N < maxInt>>1 {
+		p.N <<= 1
+	}
+
+	// Memory usage is at least 128 * r * N, see
+	// http://blog.ircmaxell.com/2014/03/why-i-dont-recommend-scrypt.html
+	// or https://drupal.org/comment/4675994#comment-4675994
+
+	var again bool
+	memBytes := memMiBytes << 20
+	// If we'd use more memory then the allowed, we can tune the memory usage
+	for 128*p.R*p.N > memBytes {
+		if p.R > 1 {
+			// by lowering r
+			p.R--
+		} else if p.N > 16 {
+			again = true
+			p.N >>= 1
+		} else {
+			break
+		}
+	}
+	if !again {
+		return p, p.Check()
+	}
+
+	// We have to compensate the lowering of N, by increasing p.
+	for i := 0; i < 10 && p.P > 0; i++ {
+		start := time.Now()
+		if _, err := scrypt.Key(password, salt, p.N, p.R, p.P, p.DKLen); err != nil {
+			return p, err
+		}
+		dur := time.Since(start)
+		if dur < timeout/2 {
+			p.P = int(float64(p.P)*float64(timeout/dur) + 1)
+		} else if dur > timeout && p.P > 1 {
+			p.P--
+		} else {
+			break
+		}
+	}
+
+	return p, p.Check()
 }
