@@ -10,7 +10,7 @@ securely derive strong keys ("hash user passwords"). This library allows you to:
 * Upgrade the parameters used to generate keys as hardware improves by storing
   them with the derived key (the scrypt spec. doesn't allow for this by
   default).
-* Provide your own parameters (if you wish to). 
+* Provide your own parameters (if you wish to).
 
 The API closely mirrors Go's [bcrypt](https://golang.org/x/crypto/bcrypt)
 library in an effort to make it easy to migrate—and because it's an easy to grok
@@ -59,26 +59,26 @@ func main() {
 
 ## Upgrading Parameters
 
-Upgrading derived keys from a set of parameters to a "stronger" set of parameters 
-as hardware improves, or as you scale (and move your auth process to separate 
+Upgrading derived keys from a set of parameters to a "stronger" set of parameters
+as hardware improves, or as you scale (and move your auth process to separate
 hardware), can be pretty useful. Here's how to do it with simple-scrypt:
 
 ```go
 func main() {
     // SCENE: We've successfully authenticated a user, compared their submitted
-    // (cleartext) password against the derived key stored in our database, and 
-    // now want to upgrade the parameters (more rounds, more parallelism) to 
-    // reflect some shiny new hardware we just purchased. As the user is logging 
-    // in, we can retrieve the parameters used to generate their key, and if 
-    // they don't match our "new" parameters, we can re-generate the key while 
-    // we still have the cleartext password in memory 
+    // (cleartext) password against the derived key stored in our database, and
+    // now want to upgrade the parameters (more rounds, more parallelism) to
+    // reflect some shiny new hardware we just purchased. As the user is logging
+    // in, we can retrieve the parameters used to generate their key, and if
+    // they don't match our "new" parameters, we can re-generate the key while
+    // we still have the cleartext password in memory
     // (e.g. before the HTTP request ends).
     current, err := scrypt.Cost(hash)
     if err != nil {
         log.Fatal(err)
     }
 
-    // Now to check them against our own Params struct (e.g. using reflect.DeepEquals) 
+    // Now to check them against our own Params struct (e.g. using reflect.DeepEquals)
     // and determine whether we want to generate a new key with our "upgraded" parameters.
     slower := scrypt.Params{
         N: 32768,
@@ -89,7 +89,7 @@ func main() {
     }
 
     if !reflect.DeepEqual(current, slower) {
-        // Re-generate the key with the slower parameters 
+        // Re-generate the key with the slower parameters
         // here using scrypt.GenerateFromPassword
     }
 }
@@ -100,9 +100,9 @@ func main() {
 The following features are planned. PRs are welcome.
 
 - [x] Tag a release build.
-- [x] Automatically calculate "optimal" values for N, r, p similar [to the Ruby scrypt library](https://github.com/pbhogan/scrypt/blob/master/lib/scrypt.rb#L97-L146) 
+- [x] Automatically calculate "optimal" values for N, r, p similar [to the Ruby scrypt library](https://github.com/pbhogan/scrypt/blob/master/lib/scrypt.rb#L97-L146)
    e.g. `func Calibrate(duration int, mem int, fallback Params) (Params, error)`
-   - contributed thanks to @tgulasci.
+   - contributed thanks to @tgulacsi.
 
 ## License
 
