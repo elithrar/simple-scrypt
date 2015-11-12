@@ -100,11 +100,9 @@ func main() {
 The following features are planned. PRs are welcome.
 
 - [x] Tag a release build.
-- [ ] ~~Automatically calculate "optimal" values for N, r, p similar [to the Ruby scrypt library](https://github.com/pbhogan/scrypt/blob/master/lib/scrypt.rb#L97-L146) 
-   e.g. `func Calibrate(duration int, mem int) (Params, error)` - long term feature 
-   due to cross-platform issues~~. Based on some research, this isn't possible 
-   cross-platform without requiring cgo. Requiring cgo isn't a worthwhile trade-off, 
-   as you can still test/measure scrypt parameter performance manually.
+- [x] Automatically calculate "optimal" values for N, r, p similar [to the Ruby scrypt library](https://github.com/pbhogan/scrypt/blob/master/lib/scrypt.rb#L97-L146) 
+   e.g. `func Calibrate(duration int, mem int, fallback Params) (Params, error)`
+   - contributed thanks to @tgulasci.
 
 ## License
 
