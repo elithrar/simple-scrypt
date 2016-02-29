@@ -134,7 +134,7 @@ func TestCalibrate(t *testing.T) {
 		start := time.Now()
 		_, err = GenerateFromPassword([]byte(password), p)
 		dur := time.Since(start)
-		t.Logf("GenerateFromPassword with %#v took %s (%v)", p, dur, err)
+		// t.Logf("GenerateFromPassword with %#v took %s (%v)", p, dur, err)
 		if err != nil {
 			t.Fatalf("%d. GenerateFromPassword with %#v: %v", testNum, p, err)
 		}
