@@ -7,31 +7,26 @@
   "title": "simple-scrypt",
   "branch": "",
   "style": {
-    "name": "Material",
+    "name": "Williamsburg",
     "componentSet": {
-      "nav": "nav/DarkAbsoluteNav",
-      "header": "header/GradientHeader",
-      "article": "article/BasicArticle",
+      "nav": "nav/BasicNav",
+      "header": "header/LightBannerHeader",
+      "article": "article/ReaderArticle",
       "footer": "footer/BasicFooter"
     },
-    "fontFamily": "Roboto, sans-serif",
+    "fontFamily": "Montserrat, sans-serif",
     "heading": {
-      "fontWeight": 500,
-      "letterSpacing": "-0.01em"
+      "fontWeight": 600,
+      "letterSpacing": "0.1em"
     },
     "colors": {
-      "text": "#212121",
+      "text": "#346",
       "background": "#fff",
-      "primary": "#2196f3",
-      "secondary": "#1565c0",
-      "highlight": "#ff4081",
-      "border": "#e0e0e0",
-      "muted": "#f5f5f5"
-    },
-    "layout": {
-      "centered": true,
-      "bannerHeight": "80vh",
-      "maxWidth": 896
+      "primary": "#0099e0",
+      "secondary": "#ab61ff",
+      "highlight": "#f7b",
+      "muted": "#fffab3",
+      "border": "#ccd"
     }
   },
   "content": [
