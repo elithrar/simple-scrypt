@@ -1,0 +1,127 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=Edge"/><meta name="viewport" content="width=device-width, initial-scale=1"/><title>simple-scrypt</title><style>*{box-sizing:border-box}.cxs-display-table{display:table}.cxs-2792547219 h5{font-weight:500;text-transform:uppercase;letter-spacing:0.2em;font-size:14px;margin-top:32px;margin-bottom:8px}.cxs-424651569{font-size:20px}.cxs-3075267555 a:hover{color:#0099e0}.cxs-4066908388{clear:both}.cxs-2262331773{font-size:20px}.cxs-1246195080{margin-left:-8px;margin-right:-8px}.cxs-3057891252{font-size:14px}.cxs-3057891252 h1{font-size:inherit;margin-top:32px}.cxs-3057891252 h1:before{content:"# ";color:#888}.cxs-3057891252 h2{font-size:inherit;margin-top:32px}.cxs-3057891252 h2:before{content:"## ";color:#888}.cxs-3057891252 h3{font-size:inherit}.cxs-3057891252 h3:before{content:"### ";color:#888}.cxs-3057891252 h4{font-size:16px}.cxs-3057891252 h5{font-size:14px}.cxs-3057891252 h6{font-size:12px}.cxs-3057891252 p{overflow-x:auto}.cxs-3057891252 code{font-family:inherit;font-size:inherit;overflow-x:auto;color:#666}.cxs-3057891252 code:before{content:"`"}.cxs-3057891252 code:after{content:"`"}.cxs-3057891252 pre{font-family:inherit;font-size:inherit;overflow-x:auto;color:#666}.cxs-3057891252 pre:before{content:"```";display:block}.cxs-3057891252 pre:after{content:"```";display:block}.cxs-3057891252 pre .hljs-keyword{color:#666}.cxs-3057891252 pre .hljs-built_in{color:#888}.cxs-3057891252 pre .hljs-type{color:#888}.cxs-3057891252 pre .hljs-literal{color:#666}.cxs-3057891252 pre .hljs-number{color:#1f80ff}.cxs-3057891252 pre .hljs-regexp{color:#666}.cxs-3057891252 pre .hljs-string{color:#888}.cxs-3057891252 pre .hljs-subst{color:#888}.cxs-3057891252 pre .hljs-symbol{color:#666}.cxs-3057891252 pre .hljs-class{color:#666}.cxs-3057891252 pre .hljs-function{color:#1f80ff}.cxs-3057891252 pre .hljs-title{color:#666}.cxs-3057891252 pre .hljs-params{color:#888}.cxs-3057891252 pre .hljs-comment{color:#888}.cxs-3057891252 pre .hljs-doctag{color:#888}.cxs-3057891252 pre .hljs-meta{color:#888}.cxs-3057891252 pre .hljs-meta-keyword{color:#666}.cxs-3057891252 pre .hljs-meta-string{color:#666}.cxs-3057891252 hr{margin-top:48px;margin-bottom:48px;border:0px;border-bottom-style:solid;border-bottom-width:1px}.cxs-3057891252 table{border-collapse:separate;border-spacing:0px;max-width:100%;width:100%}.cxs-3057891252 th{text-align:left;line-height:inherit;vertical-align:bottom}.cxs-3057891252 td{vertical-align:top;line-height:inherit}.cxs-3057891252 img{max-width: 100%;height: auto;margin-top:16px;margin-bottom:16px}.cxs-3057891252 a{color:inherit}.cxs-3057891252 ul{list-style-type:none;padding-left:0px}.cxs-3057891252 li{}.cxs-3057891252 li:before{content:"- "}.cxs-3057891252 b{}.cxs-3057891252 b:before{content:"*"}.cxs-3057891252 b:after{content:"*"}.cxs-3057891252 pre code{}.cxs-3057891252 pre code:before{content:none}.cxs-3057891252 pre code:after{content:none}.cxs-799160745{font-size:48px}.cxs-3075267555 a{color:inherit}.cxs-3954183383{font-size:24px}.cxs-3075267555 img{max-width: 100%;height: auto;margin-top:16px;margin-bottom:16px}.cxs-2792547219{}.cxs-2792547219 h1{font-weight:500;text-transform:uppercase;letter-spacing:0.2em;font-size:48px;margin-top:32px;margin-bottom:8px}.cxs-2792547219 h2{font-weight:500;text-transform:uppercase;letter-spacing:0.2em;font-size:24px;margin-top:32px;margin-bottom:8px}.cxs-2792547219 h3{font-weight:500;text-transform:uppercase;letter-spacing:0.2em;font-size:20px;margin-top:32px;margin-bottom:8px}.cxs-2792547219 h4{font-weight:500;text-transform:uppercase;letter-spacing:0.2em;font-size:16px;margin-top:32px;margin-bottom:8px}.cxs-3075267555 td{vertical-align:top;line-height:inherit}.cxs-2792547219 h6{font-weight:500;text-transform:uppercase;letter-spacing:0.2em;font-size:12px;margin-top:32px;margin-bottom:8px}.cxs-2792547219 p{overflow-x:auto;margin-top:0px;margin-bottom:16px}.cxs-2792547219 code{font-family:Menlo, monospace;font-size:14px;padding:4px;background-color:#f6f6f6;border-radius:2px}.cxs-2792547219 pre{font-family:Menlo, monospace;font-size:14px;overflow-x:auto;padding:16px;margin-top:8px;margin-bottom:32px;background-color:#f6f6f6;border-radius:2px}.cxs-2792547219 pre .hljs-keyword{color:#666}.cxs-2792547219 pre .hljs-built_in{color:#888}.cxs-2792547219 pre .hljs-type{color:#888}.cxs-2792547219 pre .hljs-literal{color:#666}.cxs-2792547219 pre .hljs-number{color:#1f80ff}.cxs-2792547219 pre .hljs-regexp{color:#666}.cxs-2792547219 pre .hljs-string{color:#888}.cxs-2792547219 pre .hljs-subst{color:#888}.cxs-2792547219 pre .hljs-symbol{color:#666}.cxs-2792547219 pre .hljs-class{color:#666}.cxs-2792547219 pre .hljs-function{color:#1f80ff}.cxs-2792547219 pre .hljs-title{color:#666}.cxs-2792547219 pre .hljs-params{color:#888}.cxs-2792547219 pre .hljs-comment{color:#888}.cxs-2792547219 pre .hljs-doctag{color:#888}.cxs-2792547219 pre .hljs-meta{color:#888}.cxs-2792547219 pre .hljs-meta-keyword{color:#666}.cxs-2792547219 pre .hljs-meta-string{color:#666}.cxs-2792547219 hr{margin-top:48px;margin-bottom:48px;border:0px;border-bottom-style:solid;border-bottom-width:1px;border-bottom:2px solid #eee}.cxs-2792547219 table{border-collapse:separate;border-spacing:0px;max-width:100%;width:100%}.cxs-2792547219 th{text-align:left;line-height:inherit;vertical-align:bottom}.cxs-2792547219 td{vertical-align:top;line-height:inherit}.cxs-2792547219 img{max-width: 100%;height: auto;margin-top:16px;margin-bottom:16px}.cxs-2792547219 a{color:#666;text-decoration: none}.cxs-2792547219 a:hover{text-decoration:underline}.cxs-2792547219 ul{padding-left:32px;margin-top:0px;margin-bottom:16px}.cxs-3075267555{font-size:20px;line-height:1.625}.cxs-3075267555 h1{font-weight:600;letter-spacing:0.1em;font-size:48px;margin-top:48px;margin-bottom:8px}.cxs-3075267555 h2{font-weight:600;letter-spacing:0.1em;font-size:24px;margin-top:48px;margin-bottom:8px}.cxs-3075267555 h3{font-weight:600;letter-spacing:0.1em;font-size:20px;margin-top:48px;margin-bottom:8px}.cxs-3075267555 h4{font-weight:600;letter-spacing:0.1em;font-size:16px;margin-top:32px;margin-bottom:8px}.cxs-3075267555 h5{font-weight:600;letter-spacing:0.1em;font-size:14px;margin-top:32px;margin-bottom:8px}.cxs-3075267555 h6{font-weight:600;letter-spacing:0.1em;font-size:12px;margin-top:32px;margin-bottom:8px}.cxs-3075267555 p{overflow-x:auto;font-size:20px;margin-top:0px;margin-bottom:16px}.cxs-3075267555 code{font-family:Menlo, monospace;font-size:14px;color:#ab61ff}.cxs-3075267555 pre{font-family:Menlo, monospace;font-size:14px;overflow-x:auto;padding-left:16px;margin-top:8px;margin-bottom:32px;border-left:2px solid #ccd}.cxs-3075267555 pre .hljs-keyword{color:#0099e0}.cxs-3075267555 pre .hljs-built_in{color:#ab61ff}.cxs-3075267555 pre .hljs-type{color:#ab61ff}.cxs-3075267555 pre .hljs-literal{color:#0099e0}.cxs-3075267555 pre .hljs-number{color:#f7b}.cxs-3075267555 pre .hljs-regexp{color:#0099e0}.cxs-3075267555 pre .hljs-string{color:#ab61ff}.cxs-3075267555 pre .hljs-subst{color:#ab61ff}.cxs-3075267555 pre .hljs-symbol{color:#0099e0}.cxs-3075267555 pre .hljs-class{color:#0099e0}.cxs-3075267555 pre .hljs-function{color:#f7b}.cxs-3075267555 pre .hljs-title{color:#0099e0}.cxs-3075267555 pre .hljs-params{color:#ab61ff}.cxs-3075267555 pre .hljs-comment{color:#ab61ff}.cxs-3075267555 pre .hljs-doctag{color:#ab61ff}.cxs-3075267555 pre .hljs-meta{color:#ab61ff}.cxs-3075267555 pre .hljs-meta-keyword{color:#0099e0}.cxs-3075267555 pre .hljs-meta-string{color:#0099e0}.cxs-3075267555 hr{margin-top:48px;margin-bottom:48px;border:0px;border-bottom:2px solid #ccd}.cxs-3075267555 table{border-collapse:separate;border-spacing:0px;max-width:100%;width:100%}.cxs-3075267555 th{text-align:left;line-height:inherit;vertical-align:bottom}.cxs-3075267555 ul{padding-left:32px;margin-top:0px;margin-bottom:16px}@media screen and (min-width: 52em) { .cxs-2262331773{font-size:32px} }@media screen and (min-width: 52em) { .cxs-3954183383{} }@media screen and (min-width: 52em) { .cxs-799160745{font-size:72px} }@media screen and (min-width: 52em) { .cxs-424651569{} }</style><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,,600"/></head><body style="margin:0;"><div class="Xv" style="font-family:Montserrat, sans-serif;font-weight:400;line-height:1.5;color:#346;background-color:#fff;"><nav style="display:flex;align-items:center;padding-top:8px;padding-bottom:8px;padding-left:16px;padding-right:16px;background-color:#fff;"><a href="https://github.com/elithrar/simple-scrypt" class="Link" style="box-sizing:border-box;color:inherit;display:inline-block;font-size:14px;line-height:16px;padding-left:16px;padding-right:16px;padding-top:16px;padding-bottom:16px;font-weight:600;text-decoration:none;">GitHub</a></nav><header class="BannerHeader" style="display:flex;align-items:center;justify-content:center;text-align:left;min-height:100vh;color:#346;background-color:#fffab3;background-image:url(undefined);background-size:cover;background-position:center;"><div style="box-sizing:border-box;width:100%;max-width:1024px;margin-left:auto;margin-right:auto;padding-top:48px;padding-bottom:48px;padding-left:32px;padding-right:32px;"><h1 class="cxs-799160745" style="box-sizing:border-box;font-weight:600;letter-spacing:0.1em;margin:0;">simple-scrypt</h1><h2 class="cxs-3954183383" style="box-sizing:border-box;font-weight:600;letter-spacing:0.1em;margin:0;">A convenience library for generating, comparing and inspecting password hashes using the scrypt KDF in Go.</h2><div class="cxs-1246195080" style="box-sizing:border-box;padding-top:16px;padding-bottom:16px;"><iframe src="https://platform.twitter.com/widgets/tweet_button.html?text=simple-scrypt%3A%20A%20convenience%20library%20for%20generating%2C%20comparing%20and%20inspecting%20password%20hashes%20using%20the%20scrypt%20KDF%20in%20Go.&amp;url=&amp;via=&amp;hashtags=&amp;size=" height="20" allowtransparency="true" frameborder="0" scrolling="no" style="box-sizing:border-box;width:61px;overflow:hidden;margin:8px;"></iframe><iframe src="https://ghbtns.com/github-btn.html?type=star&amp;count=true&amp;user=elithrar&amp;repo=simple-scrypt&amp;size=" height="20" frameborder="0" scrolling="no" style="box-sizing:border-box;width:100px;overflow:hidden;margin:8px;"></iframe><div class="cxs-4066908388 cxs-display-table"></div></div></div></header><div class="cxs-3075267555" style="box-sizing:border-box;max-width:1024px;margin-left:auto;margin-right:auto;padding-top:32px;padding-bottom:32px;padding-left:32px;padding-right:32px;"><article style="box-sizing:border-box;"><div>
+<p><a href="https://godoc.org/github.com/elithrar/simple-scrypt"><img src="https://godoc.org/github.com/elithrar/simple-scrypt?status.svg" /></a> <a href="https://travis-ci.org/elithrar/simple-scrypt"><img src="https://travis-ci.org/elithrar/simple-scrypt.svg?branch=master" /></a></p>
+<p>simple-scrypt provides a convenience wrapper around Go's existing
+<a href="http://golang.org/x/crypto/scrypt">scrypt</a> package that makes it easier to
+securely derive strong keys (&quot;hash user passwords&quot;). This library allows you to:</p>
+<ul>
+<li>Generate a scrypt derived key with a crytographically secure salt and sane
+default parameters for N, r and p.</li>
+<li>Upgrade the parameters used to generate keys as hardware improves by storing
+them with the derived key (the scrypt spec. doesn't allow for this by
+default).</li>
+<li>Provide your own parameters (if you wish to).</li>
+</ul>
+<p>The API closely mirrors Go's <a href="https://golang.org/x/crypto/bcrypt">bcrypt</a>
+library in an effort to make it easy to migrate—and because it's an easy to grok
+API.</p>
+<h2>Installation</h2>
+<p>With a <a href="https://golang.org/doc/code.html">working Go toolchain</a>:</p>
+<pre>go get -u github.com/elithrar/simple-scrypt</pre><h2>Example</h2>
+<p>simple-scrypt doesn't try to re-invent the wheel or do anything &quot;special&quot;. It
+wraps the <code>scrypt.Key</code> function as thinly as possible, generates a
+crytographically secure salt for you using Go's <code>crypto/rand</code> package, and
+returns the derived key with the parameters prepended:</p>
+<pre><span class="hljs-keyword">package</span> main
+
+<span class="hljs-keyword">import</span>(
+    <span class="hljs-string">&quot;fmt&quot;</span>
+    <span class="hljs-string">&quot;log&quot;</span>
+
+    <span class="hljs-string">&quot;github.com/elithrar/simple-scrypt&quot;</span>
+)
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+    <span class="hljs-comment">// e.g. r.PostFormValue(&quot;password&quot;)</span>
+    passwordFromForm := <span class="hljs-string">&quot;prew8fid9hick6c&quot;</span>
+
+    <span class="hljs-comment">// Generates a derived key of the form &quot;N$r$p$salt$dk&quot; where N, r and p are defined as per</span>
+    <span class="hljs-comment">// Colin Percival's scrypt paper: http://www.tarsnap.com/scrypt/scrypt.pdf</span>
+    <span class="hljs-comment">// scrypt.Defaults (N=16384, r=8, p=1) makes it easy to provide these parameters, and</span>
+    <span class="hljs-comment">// (should you wish) provide your own values via the scrypt.Params type.</span>
+    hash, err := scrypt.GenerateFromPassword([]<span class="hljs-keyword">byte</span>(passwordFromForm), scrypt.DefaultParams)
+    <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+        log.Fatal(err)
+    }
+
+    <span class="hljs-comment">// Print the derived key with its parameters prepended.</span>
+    fmt.Printf(<span class="hljs-string">&quot;%s\n&quot;</span>, hash)
+
+    <span class="hljs-comment">// Uses the parameters from the existing derived key. Return an error if they don't match.</span>
+    err := scrypt.CompareHashAndPassword(hash, []<span class="hljs-keyword">byte</span>(passwordFromForm))
+    <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+        log.Fatal(err)
+    }
+}</pre><h2>Upgrading Parameters</h2>
+<p>Upgrading derived keys from a set of parameters to a &quot;stronger&quot; set of parameters
+as hardware improves, or as you scale (and move your auth process to separate
+hardware), can be pretty useful. Here's how to do it with simple-scrypt:</p>
+<pre><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+    <span class="hljs-comment">// SCENE: We've successfully authenticated a user, compared their submitted</span>
+    <span class="hljs-comment">// (cleartext) password against the derived key stored in our database, and</span>
+    <span class="hljs-comment">// now want to upgrade the parameters (more rounds, more parallelism) to</span>
+    <span class="hljs-comment">// reflect some shiny new hardware we just purchased. As the user is logging</span>
+    <span class="hljs-comment">// in, we can retrieve the parameters used to generate their key, and if</span>
+    <span class="hljs-comment">// they don't match our &quot;new&quot; parameters, we can re-generate the key while</span>
+    <span class="hljs-comment">// we still have the cleartext password in memory</span>
+    <span class="hljs-comment">// (e.g. before the HTTP request ends).</span>
+    current, err := scrypt.Cost(hash)
+    <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+        log.Fatal(err)
+    }
+
+    <span class="hljs-comment">// Now to check them against our own Params struct (e.g. using reflect.DeepEquals)</span>
+    <span class="hljs-comment">// and determine whether we want to generate a new key with our &quot;upgraded&quot; parameters.</span>
+    slower := scrypt.Params{
+        N: <span class="hljs-number">32768</span>,
+        R: <span class="hljs-number">8</span>,
+        P: <span class="hljs-number">2</span>,
+        SaltLen: <span class="hljs-number">16</span>,
+        DKLen: <span class="hljs-number">32</span>,
+    }
+
+    <span class="hljs-keyword">if</span> !reflect.DeepEqual(current, slower) {
+        <span class="hljs-comment">// Re-generate the key with the slower parameters</span>
+        <span class="hljs-comment">// here using scrypt.GenerateFromPassword</span>
+    }
+}</pre><h2>Automatically Determining Parameters</h2>
+<p>Thanks to the work by <a href="https://github.com/tgulacsi">tgulacsi</a>, you can have simple-scrypt
+automatically determine the optimal parameters for you (time vs. memory). You should run this once
+on program startup, as calibrating parameters can be an expensive operation.</p>
+<pre><span class="hljs-keyword">var</span> params scrypt.Params
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span> {
+    <span class="hljs-keyword">var</span> err error
+    <span class="hljs-comment">// 500ms, 64MB of RAM per hash.</span>
+    params, err = scrypt.Calibrate(<span class="hljs-number">500</span>*time.Millisecond, <span class="hljs-number">64</span>, Params{})
+    <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>, err
+    }
+
+    ...
+}
+
+<span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">RegisterUserHandler</span><span class="hljs-params">(w http.ResponseWriter, r *http.Request)</span></span> {
+    err := r.ParseForm()
+    <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+        <span class="hljs-keyword">return</span>
+    }
+
+    <span class="hljs-comment">// Make sure you validate: not empty, not too long, etc.</span>
+    email := r.PostFormValue(<span class="hljs-string">&quot;email&quot;</span>)
+    pass := r.PostFormValue(<span class="hljs-string">&quot;password&quot;</span>)
+
+    <span class="hljs-comment">// Use our calibrated parameters</span>
+    hash, err := scrypt.GenerateFromPassword([]<span class="hljs-keyword">byte</span>(pass), params)
+    <span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+        <span class="hljs-keyword">return</span>
+    }
+
+    <span class="hljs-comment">// Save to DB, etc.</span>
+}</pre><p>Be aware that increasing these, whilst making it harder to brute-force the resulting hash, also
+increases the risk of a denial-of-service attack against your server. A surge in authenticate
+attempts (even if legitimate!) could consume all available resources.</p>
+<h2>License</h2>
+<p>MIT Licensed. See LICENSE file for details.</p>
+</div></article></div><footer><div style="box-sizing:border-box;max-width:1024px;margin-left:auto;margin-right:auto;margin-bottom:32px;padding-top:8px;padding-bottom:8px;padding-left:32px;padding-right:32px;"><div style="margin-left:-16px;margin-right:-16px;"><a href="https://github.com/elithrar/simple-scrypt" class="Link" style="box-sizing:border-box;color:inherit;display:inline-block;font-size:14px;line-height:16px;padding-left:16px;padding-right:16px;padding-top:16px;padding-bottom:16px;font-weight:600;text-decoration:none;">GitHub</a><a href="https://github.com/elithrar" class="Link" style="box-sizing:border-box;color:inherit;display:inline-block;font-size:14px;line-height:16px;padding-left:16px;padding-right:16px;padding-top:16px;padding-bottom:16px;font-weight:600;text-decoration:none;">elithrar</a></div><div></div></div></footer></div><div style="font-family:-apple-system, sans-serif;font-size:12px;font-weight:600;text-align:right;padding:24px;color:#333;background-color:#eee;"><a href="http://compositor.io" style="color:inherit;text-decoration:none;">Built with Compositor.io</a></div></body></html>
