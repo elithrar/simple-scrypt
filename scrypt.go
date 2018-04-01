@@ -214,12 +214,10 @@ func Cost(hash []byte) (Params, error) {
 	return params, err
 }
 
-// Calibrate returns the hardest parameters (not weaker than the given params),
-// allowed by the given limits.
+// Calibrate returns the hardest parameters, allowed by the given limits.
 // The returned params will not use more memory than the given (MiB);
 // will not take more time than the given timeout, but more than timeout/2.
 //
-// TODO: small memory, big timeout
 //
 //   The default timeout (when the timeout arg is zero) is 200ms.
 //   The default memMiBytes (when memMiBytes is zero) is 16MiB.
