@@ -252,17 +252,17 @@ func Calibrate(timeout time.Duration, memMiBytes int, params Params) (Params, er
 	// 128 * r * N. Depending on the implementation these can be run sequentially or parallel.
 	// The go implementation runs them sequentially, therefore p can be used to adjust the runtime of scrypt.
 
-	// start with p = 1
+	// we start with p=1 and only increase it if we have to
 	p.P = 1
 
 	// Memory usage is at least 128 * r * N, see
 	// http://blog.ircmaxell.com/2014/03/why-i-dont-recommend-scrypt.html
 	// or https://drupal.org/comment/4675994#comment-4675994
 
-	// we calculate N based on the wanted memory usage
+	// we calculate N based on the desired memory usage
 	memBytes := memMiBytes << 20
 	p.N = 1
-	for 128*p.R*p.N < memBytes {
+	for 128*int64(p.R)*int64(p.N) < int64(memBytes) {
 		p.N <<= 1
 	}
 	p.N >>= 1
@@ -285,9 +285,20 @@ func Calibrate(timeout time.Duration, memMiBytes int, params Params) (Params, er
 		dur = time.Since(start)
 	}
 
-	// increase p until we reach the timeout
-	for dur < timeout {
-		p.P++
+	// approximate p needed to reach desired runtime; based on runtime with p==1
+	p.P = int(timeout / dur)
+
+	start = time.Now()
+	if _, err := scrypt.Key(password, salt, p.N, p.R, p.P, p.DKLen); err != nil {
+		return p, err
+	}
+	dur = time.Since(start)
+
+	// our p might be to big because the runtime of scrypt may vary depending on system load
+	// this problem occurs with small N/big p
+	for dur > timeout {
+		// we calculate the new p based on the time needed for a run with current p
+		p.P = int(int64(timeout) / (int64(dur) / int64(p.P)))
 
 		start = time.Now()
 		if _, err := scrypt.Key(password, salt, p.N, p.R, p.P, p.DKLen); err != nil {
@@ -295,8 +306,6 @@ func Calibrate(timeout time.Duration, memMiBytes int, params Params) (Params, er
 		}
 		dur = time.Since(start)
 	}
-	// dial one back
-	p.P--
 
 	return p, p.Check()
 }

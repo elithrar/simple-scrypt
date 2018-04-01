@@ -114,6 +114,9 @@ func TestCalibrate(t *testing.T) {
 	for testNum, tc := range []struct {
 		MemMiB int
 	}{
+		{512},
+		{256},
+		{128},
 		{64},
 		{32},
 		{16},
