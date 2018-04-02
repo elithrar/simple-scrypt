@@ -142,9 +142,9 @@ func TestCalibrate(t *testing.T) {
 			t.Fatalf("%d. GenerateFromPassword with %#v: %v", testNum, p, err)
 		}
 		if dur < timeout/2 {
-			t.Errorf("%d. GenerateFromPassword was too fast (wanted around %s, got %s) with %#v.", testNum, timeout, dur, p)
+			t.Errorf("%d. GenerateFromPassword was too fast (expected between %s and %s, got %s) with %#v.", testNum, timeout/2, timeout+timeout/2, dur, p)
 		} else if timeout+timeout/2 < dur {
-			t.Errorf("%d. GenerateFromPassword took too long (wanted around %s, got %s) with %#v.", testNum, timeout, dur, p)
+			t.Errorf("%d. GenerateFromPassword took too long (expected between %s and %s, got %s) with %#v.", testNum, timeout/2, timeout+timeout/2, dur, p)
 		}
 	}
 }
