@@ -248,7 +248,7 @@ func Calibrate(timeout time.Duration, memMiBytes int, params Params) (Params, er
 
 	// Scrypt runs p independent mixing functions with a memory requirement of roughly
 	// 128 * r * N. Depending on the implementation these can be run sequentially or parallel.
-	// The go implementation runs them sequentially, therefore p can be used to adjust the runtime of scrypt.
+	// The go implementation runs them sequentially, therefore p can be used to adjust the execution time of scrypt.
 
 	// we start with p=1 and only increase it if we have to
 	p.P = 1
@@ -257,7 +257,7 @@ func Calibrate(timeout time.Duration, memMiBytes int, params Params) (Params, er
 	// http://blog.ircmaxell.com/2014/03/why-i-dont-recommend-scrypt.html
 	// or https://drupal.org/comment/4675994#comment-4675994
 
-	// we calculate N based on the desired memory usage
+	// calculate N based on the desired memory usage
 	memBytes := memMiBytes << 20
 	p.N = 1
 	for 128*int64(p.R)*int64(p.N) < int64(memBytes) {
@@ -265,7 +265,7 @@ func Calibrate(timeout time.Duration, memMiBytes int, params Params) (Params, er
 	}
 	p.N >>= 1
 
-	// calculate the current runtime
+	// calculate the current execution time
 	start := time.Now()
 	if _, err := scrypt.Key(password, salt, p.N, p.R, p.P, p.DKLen); err != nil {
 		return p, err
