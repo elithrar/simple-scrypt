@@ -283,20 +283,18 @@ func Calibrate(timeout time.Duration, memMiBytes int, params Params) (Params, er
 		dur = time.Since(start)
 	}
 
-	// approximate p needed to reach desired runtime; based on runtime with p==1
-	p.P = int(timeout / dur)
+	// try to reach desired timeout by increasing p
+	// the further away we are from timeout the bigger the steps should be
+	for dur < timeout {
+		// the theoretical optimal p; can not be used because of inaccurate measuring
+		optimalP := int(int64(timeout) / (int64(dur) / int64(p.P)))
 
-	start = time.Now()
-	if _, err := scrypt.Key(password, salt, p.N, p.R, p.P, p.DKLen); err != nil {
-		return p, err
-	}
-	dur = time.Since(start)
-
-	// our p might be to big because the runtime of scrypt may vary depending on system load
-	// this problem occurs with small N/big p
-	for dur > timeout {
-		// we calculate the new p based on the time needed for a run with current p
-		p.P = int(int64(timeout) / (int64(dur) / int64(p.P)))
+		if optimalP > p.P+1 {
+			// use average between optimal p and current p
+			p.P = (p.P + optimalP) / 2
+		} else {
+			p.P++
+		}
 
 		start = time.Now()
 		if _, err := scrypt.Key(password, salt, p.N, p.R, p.P, p.DKLen); err != nil {
@@ -304,6 +302,8 @@ func Calibrate(timeout time.Duration, memMiBytes int, params Params) (Params, er
 		}
 		dur = time.Since(start)
 	}
+	// lower by one to get shorter duration than timeout
+	p.P--
 
 	return p, p.Check()
 }
