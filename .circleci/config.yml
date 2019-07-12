@@ -47,9 +47,9 @@ jobs:
               go vet -v ./...
             fi
       - run:
-          name: "Run go test (+ race detector)"
+          name: "Run go test"
           command: >
-            go test -v -race ./...
+            go test -v ./...
 
 workflows:
   build:
