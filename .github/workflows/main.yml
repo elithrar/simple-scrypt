@@ -1,5 +1,7 @@
 on: [push, pull_request]
 name: Test
+env:
+  GO111MODULE=on
 jobs:
   test:
     strategy:
@@ -14,10 +16,6 @@ jobs:
         go-version: ${{ matrix.go-version }}
     - name: Checkout code
       uses: actions/checkout@v2
-    - name: Print Go version
-      run: go version
-    - name: Download dependencies
-      run: go mod download
     - name: Run vet
       run: go vet -v ./...
     - name: Run go test
