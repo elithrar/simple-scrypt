@@ -1,7 +1,7 @@
 on: [push, pull_request]
 name: Test
 env:
-  GO111MODULE=on
+  GO111MODULE: on
 jobs:
   test:
     strategy:
