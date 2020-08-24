@@ -1,0 +1,72 @@
+version: 2.1
+
+jobs:
+  # Base test configuration for Go library tests. Each distinct version should
+  # inherit this base, and override (at least) the container image used.
+  "test": &test
+    parameters:
+      v:
+        type: string
+        default: "latest"
+      latest:
+        type: boolean
+        default: false
+    docker:
+      - image: "circleci/golang:<< parameters.v >>"
+    working_directory: /go/src/github.com/elithrar/simple-scrypt
+    environment:
+      GO111MODULE: "on"
+      LATEST: "<< parameters.latest >>"
+    steps:
+      - checkout
+      - run:
+          name: "Print the Go version"
+          command: >
+            go version
+      - run:
+          name: "Fetch dependencies"
+          command: go mod download
+      # Only run gofmt, vet & lint against the latest Go version
+      - run:
+          name: "Run golint"
+          command: >
+            if [ "${LATEST}" = true ] && [ -z "${SKIP_GOLINT}" ]; then
+              go get -u golang.org/x/lint/golint
+              golint ./...
+            fi
+      - run:
+          name: "Run gofmt"
+          command: >
+            if [[ "${LATEST}" = true ]]; then
+              diff -u <(echo -n) <(gofmt -d -e .)
+            fi
+      - run:
+          name: "Run go vet"
+          command: >
+            if [[ "${LATEST}" = true ]]; then
+              go vet -v ./...
+            fi
+      - run:
+          name: "Run go test"
+          command: >
+            go test -v ./...
+
+workflows:
+  build:
+    jobs:
+      - test:
+          name: "latest"
+          v: "latest"
+          latest: true
+      - test:
+          name: "Go 1.14"
+          v: "1.14"
+      - test:
+          name: "Go 1.13"
+          v: "1.13"
+      - test:
+          name: "Go 1.12"
+          v: "1.12"
+      - test:
+          name: "Go 1.11"
+          v: "1.11"

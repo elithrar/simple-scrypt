@@ -1,16 +1,18 @@
 # simple-scrypt
-[![GoDoc](https://godoc.org/github.com/elithrar/simple-scrypt?status.svg)](https://godoc.org/github.com/elithrar/simple-scrypt) [![Build Status](https://travis-ci.org/elithrar/simple-scrypt.svg?branch=master)](https://travis-ci.org/elithrar/simple-scrypt)
+
+[![GoDoc](https://godoc.org/github.com/elithrar/simple-scrypt?status.svg)](https://godoc.org/github.com/elithrar/simple-scrypt)
+[![CircleCI](https://circleci.com/gh/elithrar/simple-scrypt.svg?style=svg)](https://circleci.com/gh/elithrar/simple-scrypt)
 
 simple-scrypt provides a convenience wrapper around Go's existing
 [scrypt](http://golang.org/x/crypto/scrypt) package that makes it easier to
 securely derive strong keys ("hash user passwords"). This library allows you to:
 
-* Generate a scrypt derived key with a crytographically secure salt and sane
+- Generate a scrypt derived key with a crytographically secure salt and sane
   default parameters for N, r and p.
-* Upgrade the parameters used to generate keys as hardware improves by storing
+- Upgrade the parameters used to generate keys as hardware improves by storing
   them with the derived key (the scrypt spec. doesn't allow for this by
   default).
-* Provide your own parameters (if you wish to).
+- Provide your own parameters (if you wish to).
 
 The API closely mirrors Go's [bcrypt](https://golang.org/x/crypto/bcrypt)
 library in an effort to make it easy to migrate—and because it's an easy to grok
@@ -152,4 +154,3 @@ attempts (even if legitimate!) could consume all available resources.
 ## License
 
 MIT Licensed. See LICENSE file for details.
-
