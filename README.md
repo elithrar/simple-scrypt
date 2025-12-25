@@ -5,7 +5,7 @@ simple-scrypt provides a convenience wrapper around Go's existing
 [scrypt](http://golang.org/x/crypto/scrypt) package that makes it easier to
 securely derive strong keys ("hash user passwords"). This library allows you to:
 
-* Generate a scrypt derived key with a crytographically secure salt and sane
+* Generate a scrypt derived key with a cryptographically secure salt and sane
   default parameters for N, r and p.
 * Upgrade the parameters used to generate keys as hardware improves by storing
   them with the derived key (the scrypt spec. doesn't allow for this by
@@ -28,7 +28,7 @@ go get -u github.com/elithrar/simple-scrypt
 
 simple-scrypt doesn't try to re-invent the wheel or do anything "special". It
 wraps the `scrypt.Key` function as thinly as possible, generates a
-crytographically secure salt for you using Go's `crypto/rand` package, and
+cryptographically secure salt for you using Go's `crypto/rand` package, and
 returns the derived key with the parameters prepended:
 
 ```go
@@ -47,7 +47,7 @@ func main() {
 
     // Generates a derived key of the form "N$r$p$salt$dk" where N, r and p are defined as per
     // Colin Percival's scrypt paper: http://www.tarsnap.com/scrypt/scrypt.pdf
-    // scrypt.Defaults (N=16384, r=8, p=1) makes it easy to provide these parameters, and
+    // scrypt.DefaultParams (N=16384, r=8, p=1) makes it easy to provide these parameters, and
     // (should you wish) provide your own values via the scrypt.Params type.
     hash, err := scrypt.GenerateFromPassword([]byte(passwordFromForm), scrypt.DefaultParams)
     if err != nil {
@@ -58,7 +58,7 @@ func main() {
     fmt.Printf("%s\n", hash)
 
     // Uses the parameters from the existing derived key. Return an error if they don't match.
-    err := scrypt.CompareHashAndPassword(hash, []byte(passwordFromForm))
+    err = scrypt.CompareHashAndPassword(hash, []byte(passwordFromForm))
     if err != nil {
         log.Fatal(err)
     }
@@ -86,7 +86,7 @@ func main() {
         log.Fatal(err)
     }
 
-    // Now to check them against our own Params struct (e.g. using reflect.DeepEquals)
+    // Now to check them against our own Params struct (e.g. using reflect.DeepEqual)
     // and determine whether we want to generate a new key with our "upgraded" parameters.
     slower := scrypt.Params{
         N: 32768,
@@ -115,9 +115,9 @@ var params scrypt.Params
 func main() {
     var err error
     // 500ms, 64MB of RAM per hash.
-    params, err = scrypt.Calibrate(500*time.Millisecond, 64, Params{})
+    params, err = scrypt.Calibrate(500*time.Millisecond, 64, scrypt.Params{})
     if err != nil {
-        return nil, err
+        log.Fatal(err)
     }
 
     ...

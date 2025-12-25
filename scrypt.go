@@ -38,7 +38,7 @@ type Params struct {
 
 // DefaultParams provides sensible default inputs into the scrypt function
 // for interactive use (i.e. web applications).
-// These defaults will consume approxmiately 16MB of memory (128 * r * N).
+// These defaults will consume approximately 16MB of memory (128 * r * N).
 // The default key length is 256 bits.
 var DefaultParams = Params{N: 16384, R: 8, P: 1, SaltLen: 16, DKLen: 32}
 
@@ -163,7 +163,7 @@ func (p *Params) Check() error {
 func decodeHash(hash []byte) (Params, []byte, []byte, error) {
 	vals := strings.Split(string(hash), "$")
 
-	// P, N, R, salt, scrypt derived key
+	// N, R, P, salt, scrypt derived key
 	if len(vals) != 5 {
 		return Params{}, nil, nil, ErrInvalidHash
 	}
@@ -218,10 +218,9 @@ func Cost(hash []byte) (Params, error) {
 // The returned params will not use more memory than the given (MiB);
 // will not take more time than the given timeout, but more than timeout/2.
 //
-//
-//   The default timeout (when the timeout arg is zero) is 200ms.
-//   The default memMiBytes (when memMiBytes is zero) is 16MiB.
-//   The default parameters (when params == Params{}) is DefaultParams.
+//	The default timeout (when the timeout arg is zero) is 200ms.
+//	The default memMiBytes (when memMiBytes is zero) is 16MiB.
+//	The default parameters (when params == Params{}) is DefaultParams.
 func Calibrate(timeout time.Duration, memMiBytes int, params Params) (Params, error) {
 	p := params
 	if p.N == 0 || p.R == 0 || p.P == 0 || p.SaltLen == 0 || p.DKLen == 0 {
@@ -272,7 +271,7 @@ func Calibrate(timeout time.Duration, memMiBytes int, params Params) (Params, er
 	}
 	dur := time.Since(start)
 
-	// reduce N if scrypt takes to long
+	// reduce N if scrypt takes too long
 	for dur > timeout {
 		p.N >>= 1
 
