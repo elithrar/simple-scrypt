@@ -42,7 +42,7 @@ jobs:
           OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
         with:
           model: opencode/claude-opus-4-5
-          share: true
+          share: false
           oidc_base_url: "https://ask-bonk.silverlock.workers.dev/auth"
           mentions: "/bonk,@ask-bonk"
   
