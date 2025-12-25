@@ -1,5 +1,5 @@
 # simple-scrypt
-[![GoDoc](https://godoc.org/github.com/elithrar/simple-scrypt?status.svg)](https://godoc.org/github.com/elithrar/simple-scrypt) [![Build Status](https://travis-ci.org/elithrar/simple-scrypt.svg?branch=master)](https://travis-ci.org/elithrar/simple-scrypt)
+[![GoDoc](https://godoc.org/github.com/elithrar/simple-scrypt?status.svg)](https://godoc.org/github.com/elithrar/simple-scrypt)
 
 simple-scrypt provides a convenience wrapper around Go's existing
 [scrypt](http://golang.org/x/crypto/scrypt) package that makes it easier to
