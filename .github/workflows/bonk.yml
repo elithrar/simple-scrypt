@@ -1,9 +1,13 @@
 name: Bonk
+
 on:
   issue_comment:
     types: [created]
+  pull_request_review_comment:
+    types: [created]
   pull_request_review:
     types: [submitted]
+
 jobs:
   bonk:
     if: |
@@ -48,4 +52,3 @@ jobs:
           share: false
           oidc_base_url: "https://ask-bonk.silverlock.workers.dev/auth"
           mentions: "/bonk,@ask-bonk"
-  
