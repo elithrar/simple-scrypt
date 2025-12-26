@@ -10,7 +10,11 @@ jobs:
   bonk:
     if: github.event.sender.type != 'Bot'
     runs-on: ubuntu-latest
-    permissions: write-all
+    permissions:
+      id-token: write
+      contents: write
+      issues: write
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -24,3 +28,4 @@ jobs:
         with:
           model: opencode/claude-opus-4-5
           mentions: "/bonk,@ask-bonk"
+          permissions: write
