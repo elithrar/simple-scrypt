@@ -10,12 +10,7 @@ jobs:
   bonk:
     if: github.event.sender.type != 'Bot'
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: write
-      issues: write
-      pull-requests: write
-      checks: write
+    permissions: write-all
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
