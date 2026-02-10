@@ -40,7 +40,7 @@ gofmt -w .
 go vet ./...
 ```
 
-CI runs on push/PR to `main` across Go 1.20, 1.21, 1.22, 1.23 on Ubuntu.
+CI runs on push/PR to `main` across Go 1.21, 1.22, 1.23, 1.24 plus tip on Ubuntu.
 All three checks must pass: `gofmt`, `go vet`, `go test -v -race ./...`.
 
 Always run `go test -v -race ./...` before committing to catch data races and regressions.
