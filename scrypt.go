@@ -75,12 +75,12 @@ func GenerateRandomBytes(n int) ([]byte, error) {
 // If the parameters provided are less than the minimum acceptable values,
 // an error will be returned.
 func GenerateFromPassword(password []byte, params Params) ([]byte, error) {
-	salt, err := GenerateRandomBytes(params.SaltLen)
-	if err != nil {
+	if err := params.Check(); err != nil {
 		return nil, err
 	}
 
-	if err := params.Check(); err != nil {
+	salt, err := GenerateRandomBytes(params.SaltLen)
+	if err != nil {
 		return nil, err
 	}
 
@@ -218,6 +218,9 @@ func Cost(hash []byte) (Params, error) {
 // The returned params will not use more memory than the given (MiB);
 // will not take more time than the given timeout, but more than timeout/2.
 //
+// R is always set to 8 regardless of the input params, per
+// https://blog.filippo.io/the-scrypt-parameters/.
+//
 //	The default timeout (when the timeout arg is zero) is 200ms.
 //	The default memMiBytes (when memMiBytes is zero) is 16MiB.
 //	The default parameters (when params == Params{}) is DefaultParams.
@@ -233,6 +236,9 @@ func Calibrate(timeout time.Duration, memMiBytes int, params Params) (Params, er
 	}
 	if memMiBytes == 0 {
 		memMiBytes = 16
+	}
+	if memMiBytes < 0 {
+		return p, ErrInvalidParams
 	}
 	salt, err := GenerateRandomBytes(p.SaltLen)
 	if err != nil {
@@ -286,7 +292,11 @@ func Calibrate(timeout time.Duration, memMiBytes int, params Params) (Params, er
 	// the further away we are from timeout the bigger the steps should be
 	for dur < timeout {
 		// the theoretical optimal p; can not be used because of inaccurate measuring
-		optimalP := int(int64(timeout) / (int64(dur) / int64(p.P)))
+		durPerP := int64(dur) / int64(p.P)
+		if durPerP == 0 {
+			durPerP = 1
+		}
+		optimalP := int(int64(timeout) / durPerP)
 
 		if optimalP > p.P+1 {
 			// use average between optimal p and current p
@@ -302,7 +312,9 @@ func Calibrate(timeout time.Duration, memMiBytes int, params Params) (Params, er
 		dur = time.Since(start)
 	}
 	// lower by one to get shorter duration than timeout
-	p.P--
+	if p.P > 1 {
+		p.P--
+	}
 
 	return p, p.Check()
 }

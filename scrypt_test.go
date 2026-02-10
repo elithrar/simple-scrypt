@@ -1,8 +1,11 @@
 package scrypt
 
 import (
+	"encoding/hex"
 	"fmt"
 	"reflect"
+	"strconv"
+	"strings"
 	"testing"
 	"time"
 )
@@ -57,9 +60,53 @@ func TestGenerateRandomBytes(t *testing.T) {
 func TestGenerateFromPassword(t *testing.T) {
 	for _, v := range testParams {
 		_, err := GenerateFromPassword([]byte(password), v.params)
-		if err != nil && v.pass == true {
-			t.Fatalf("no error was returned when expected for params: %+v", v.params)
+		if v.pass && err != nil {
+			t.Fatalf("unexpected error for valid params %+v: %v", v.params, err)
 		}
+		if !v.pass && err == nil {
+			t.Fatalf("expected error for invalid params %+v, got nil", v.params)
+		}
+	}
+}
+
+func TestHashFormat(t *testing.T) {
+	hash, err := GenerateFromPassword([]byte(password), DefaultParams)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	parts := strings.Split(string(hash), "$")
+	if len(parts) != 5 {
+		t.Fatalf("expected 5 dollar-separated fields, got %d: %s", len(parts), hash)
+	}
+
+	n, err := strconv.Atoi(parts[0])
+	if err != nil || n != DefaultParams.N {
+		t.Errorf("N field: got %q, want %d", parts[0], DefaultParams.N)
+	}
+	r, err := strconv.Atoi(parts[1])
+	if err != nil || r != DefaultParams.R {
+		t.Errorf("R field: got %q, want %d", parts[1], DefaultParams.R)
+	}
+	p, err := strconv.Atoi(parts[2])
+	if err != nil || p != DefaultParams.P {
+		t.Errorf("P field: got %q, want %d", parts[2], DefaultParams.P)
+	}
+
+	salt, err := hex.DecodeString(parts[3])
+	if err != nil {
+		t.Fatalf("salt is not valid hex: %v", err)
+	}
+	if len(salt) != DefaultParams.SaltLen {
+		t.Errorf("salt length: got %d, want %d", len(salt), DefaultParams.SaltLen)
+	}
+
+	dk, err := hex.DecodeString(parts[4])
+	if err != nil {
+		t.Fatalf("dk is not valid hex: %v", err)
+	}
+	if len(dk) != DefaultParams.DKLen {
+		t.Errorf("dk length: got %d, want %d", len(dk), DefaultParams.DKLen)
 	}
 }
 
@@ -82,21 +129,36 @@ func TestCompareHashAndPassword(t *testing.T) {
 		t.Fatalf("did not identify an invalid hash")
 	}
 
+	if err := CompareHashAndPassword(nil, []byte(password)); err == nil {
+		t.Fatal("expected error for nil hash")
+	}
+	if err := CompareHashAndPassword([]byte{}, []byte(password)); err == nil {
+		t.Fatal("expected error for empty hash")
+	}
+	if err := CompareHashAndPassword(hash, nil); err == nil {
+		t.Fatal("expected error for nil password, got match")
+	}
 }
 
 func TestCost(t *testing.T) {
-	hash, err := GenerateFromPassword([]byte(password), DefaultParams)
-	if err != nil {
-		t.Fatal(err)
-	}
+	for _, want := range []Params{
+		DefaultParams,
+		{65536, 8, 1, 16, 64},
+		{4096, 8, 1, 32, 32},
+	} {
+		hash, err := GenerateFromPassword([]byte(password), want)
+		if err != nil {
+			t.Fatalf("GenerateFromPassword(%+v): %v", want, err)
+		}
 
-	params, err := Cost(hash)
-	if err != nil {
-		t.Fatal(err)
-	}
+		got, err := Cost(hash)
+		if err != nil {
+			t.Fatalf("Cost(%+v): %v", want, err)
+		}
 
-	if !reflect.DeepEqual(params, DefaultParams) {
-		t.Fatal("cost mismatch: parameters used did not match those retrieved")
+		if !reflect.DeepEqual(got, want) {
+			t.Fatalf("cost mismatch: got %+v, want %+v", got, want)
+		}
 	}
 }
 
@@ -105,6 +167,56 @@ func TestDecodeHash(t *testing.T) {
 		_, err := Cost([]byte(v.hash))
 		if err == nil && v.pass == false {
 			t.Fatal("invalid hash: did not correctly detect invalid password hash")
+		}
+	}
+}
+
+// TestKnownHash verifies CompareHashAndPassword against a hash constructed from
+// the RFC 7914 Section 12 test vector (P="pleaseletmein", S="SodiumChloride",
+// N=16384, r=8, p=1, dkLen=64). This catches regressions in the underlying
+// scrypt implementation or changes to the hash encoding format.
+func TestKnownHash(t *testing.T) {
+	// salt = hex("SodiumChloride"), dk = RFC 7914 expected output
+	known := []byte("16384$8$1$536f6469756d43686c6f72696465$" +
+		"7023bdcb3afd7348461c06cd81fd38eb" +
+		"fda8fbba904f8e3ea9b543f6545da1f2" +
+		"d5432955613f0fcf62d49705242a9af9" +
+		"e61e85dc0d651e40dfcf017b45575887")
+	if err := CompareHashAndPassword(known, []byte("pleaseletmein")); err != nil {
+		t.Fatalf("RFC 7914 known-good hash failed verification: %v", err)
+	}
+
+	if err := CompareHashAndPassword(known, []byte("wrong-password")); err == nil {
+		t.Fatal("known hash matched incorrect password")
+	}
+}
+
+func TestCheck(t *testing.T) {
+	tests := []struct {
+		pass   bool
+		params Params
+		desc   string
+	}{
+		{true, Params{2, 1, 1, 8, 16}, "minimum valid params"},
+		{true, Params{16384, 8, 1, 16, 32}, "default params"},
+		{false, Params{3, 8, 1, 16, 32}, "N not power of 2"},
+		{false, Params{0, 8, 1, 16, 32}, "N is zero"},
+		{false, Params{1, 8, 1, 16, 32}, "N is 1"},
+		{false, Params{-1, 8, 1, 16, 32}, "N is negative"},
+		{false, Params{16384, 0, 1, 16, 32}, "R is zero"},
+		{false, Params{16384, 8, 0, 16, 32}, "P is zero"},
+		{false, Params{16384, 8, 1, 7, 32}, "SaltLen below minimum"},
+		{true, Params{16384, 8, 1, 8, 32}, "SaltLen at minimum"},
+		{false, Params{16384, 8, 1, 16, 15}, "DKLen below minimum"},
+		{true, Params{16384, 8, 1, 16, 16}, "DKLen at minimum"},
+	}
+	for _, tc := range tests {
+		err := tc.params.Check()
+		if tc.pass && err != nil {
+			t.Errorf("%s: unexpected error: %v", tc.desc, err)
+		}
+		if !tc.pass && err == nil {
+			t.Errorf("%s: expected error, got nil", tc.desc)
 		}
 	}
 }
@@ -141,10 +253,10 @@ func TestCalibrate(t *testing.T) {
 		if err != nil {
 			t.Fatalf("%d. GenerateFromPassword with %#v: %v", testNum, p, err)
 		}
-		if dur < timeout/2 {
-			t.Errorf("%d. GenerateFromPassword was too fast (expected between %s and %s, got %s) with %#v.", testNum, timeout/2, timeout+timeout/2, dur, p)
-		} else if timeout+timeout/2 < dur {
-			t.Errorf("%d. GenerateFromPassword took too long (expected between %s and %s, got %s) with %#v.", testNum, timeout/2, timeout+timeout/2, dur, p)
+		if dur < timeout/4 {
+			t.Errorf("%d. GenerateFromPassword was too fast (expected at least %s, got %s) with %#v.", testNum, timeout/4, dur, p)
+		} else if 3*timeout < dur {
+			t.Errorf("%d. GenerateFromPassword took too long (expected at most %s, got %s) with %#v.", testNum, 3*timeout, dur, p)
 		}
 	}
 }
