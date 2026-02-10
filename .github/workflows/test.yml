@@ -2,16 +2,16 @@ name: Test
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go-version: ['1.20', '1.21', '1.22', '1.23']
+        go-version: ['1.21', '1.22', '1.23', '1.24']
 
     steps:
       - uses: actions/checkout@v4
@@ -29,3 +29,30 @@ jobs:
 
       - name: Run tests
         run: go test -v -race ./...
+
+  test-tip:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go stable (for gotip bootstrap)
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Install gotip
+        run: |
+          go install golang.org/dl/gotip@latest
+          gotip download
+          echo "$(gotip env GOROOT)/bin" >> $GITHUB_PATH
+
+      - name: Verify formatting
+        run: test -z "$(gofmt -l .)"
+
+      - name: Run go vet
+        run: gotip vet ./...
+
+      - name: Run tests
+        run: gotip test -v -race ./...
